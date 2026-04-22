@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sypher Engine可视化交互课堂</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="assets/tailwind-3.4.17.js"></script>
+    <link href="assets/fonts/nunito.css" rel="stylesheet">
+    <style>
+/* ============================================================
+   DUOLINGO-INSPIRED VISUAL REDESIGN
+   Same content · Same structure · New visual style
+   ============================================================ */
+
+/* 1. TYPOGRAPHY — Nunito (Duolingo's signature rounded font) */
+*, *::before, *::after {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.font-mono, pre, code, kbd, samp, textarea {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace !important;
+}
+
+/* 2. BACKGROUNDS — Light mode */
+html, body { background-color: #f0f4f8 !important; }
+
+.bg-slate-950 { background-color: #f0f4f8 !important; }
+.bg-slate-950\/80 { background-color: rgba(248,250,252,0.96) !important; }
+.bg-slate-950\/90 { background-color: rgba(248,250,252,0.98) !important; }
+
+.bg-slate-900  { background-color: #ffffff !important; }
+.bg-slate-900\/50 { background-color: #f4f7fb !important; }
+.bg-slate-900\/80 { background-color: #f0f4f9 !important; }
+.bg-slate-900\/90 { background-color: #f8fafc !important; }
+
+.bg-slate-800  { background-color: #ffffff !important; }
+.bg-slate-800\/50 { background-color: rgba(255,255,255,0.85) !important; }
+.bg-slate-800\/80 { background-color: rgba(255,255,255,0.92) !important; }
+.bg-slate-800\/90 { background-color: rgba(255,255,255,0.96) !important; }
+
+.bg-slate-700  { background-color: #eef2f7 !important; }
+.bg-slate-600  { background-color: #e2e8f0 !important; }
+
+/* 3. TEXT — Dark text for light backgrounds */
+.text-slate-100 { color: #1e293b !important; }
+.text-slate-200 { color: #334155 !important; }
+.text-slate-300 { color: #475569 !important; }
+.text-slate-400 { color: #64748b !important; }
+.text-slate-500 { color: #94a3b8 !important; }
+
+/* Make text-white dark on now-light backgrounds */
+.text-white { color: #1e293b !important; }
+
+/* RESTORE white text on colored elements — cascade order matters:
+   these rules come AFTER .text-white so they win on same elements */
+.bg-indigo-600, .bg-indigo-500, .bg-indigo-400,
+.bg-green-600, .bg-green-500, .bg-green-400,
+.bg-red-500, .bg-red-600, .bg-red-700,
+.bg-blue-600, .bg-blue-500,
+.bg-purple-600, .bg-purple-500,
+.bg-orange-500, .bg-orange-600,
+.bg-pink-600, .bg-pink-500,
+.bg-emerald-600, .bg-emerald-500,
+.bg-cyan-600, .bg-cyan-500 {
+  color: white !important;
+}
+
+/* 4. BORDERS */
+.border-slate-700  { border-color: #e2e8f0 !important; }
+.border-slate-700\/50 { border-color: rgba(226,232,240,0.5) !important; }
+.border-slate-800  { border-color: #eef2f7 !important; }
+.border-slate-600  { border-color: #cbd5e1 !important; }
+.border-slate-500  { border-color: #94a3b8 !important; }
+
+/* 5. PRIMARY COLOR — Duolingo Green #58CC02 */
+.bg-indigo-600 { background-color: #58CC02 !important; }
+.bg-indigo-500 { background-color: #61DE02 !important; }
+.bg-indigo-400 { background-color: #75EF12 !important; }
+.hover\:bg-indigo-600:hover { background-color: #4CB800 !important; }
+.hover\:bg-indigo-500:hover { background-color: #4CB800 !important; }
+.disabled\:bg-slate-700:disabled { background-color: #e2e8f0 !important; }
+.disabled\:text-slate-500:disabled { color: #94a3b8 !important; }
+
+.text-indigo-400 { color: #2d8c00 !important; }
+.text-indigo-300 { color: #38a800 !important; }
+.text-indigo-200 { color: #4cc400 !important; }
+
+.border-indigo-500        { border-color: #58CC02 !important; }
+.border-indigo-500\/20    { border-color: rgba(88,204,2,0.2) !important; }
+.border-indigo-500\/30    { border-color: rgba(88,204,2,0.3) !important; }
+.border-indigo-500\/50    { border-color: rgba(88,204,2,0.5) !important; }
+.hover\:border-indigo-500:hover { border-color: #58CC02 !important; }
+.focus-within\:border-indigo-500:focus-within { border-color: #58CC02 !important; }
+
+.bg-indigo-900\/20 { background-color: rgba(88,204,2,0.07) !important; }
+.bg-indigo-900\/50 { background-color: rgba(88,204,2,0.11) !important; }
+
+.ring-indigo-500\/20         { --tw-ring-color: rgba(88,204,2,0.2) !important; }
+.shadow-indigo-500\/30       { box-shadow: 0 20px 25px -5px rgba(88,204,2,0.28), 0 8px 10px -6px rgba(88,204,2,0.18) !important; }
+.shadow-indigo-500\/20       { box-shadow: 0 20px 25px -5px rgba(88,204,2,0.18) !important; }
+.hover\:shadow-indigo-500\/50:hover { box-shadow: 0 12px 28px rgba(88,204,2,0.45) !important; }
+.shadow-indigo-500\/25       { box-shadow: 0 10px 25px rgba(88,204,2,0.25) !important; }
+
+/* 6. GREEN → Duolingo Green */
+.bg-green-600 { background-color: #58CC02 !important; }
+.bg-green-500 { background-color: #61DE02 !important; }
+.hover\:bg-green-500:hover { background-color: #4CB800 !important; }
+.hover\:bg-green-600:hover { background-color: #3d9000 !important; }
+
+.text-green-400 { color: #2d8c00 !important; }
+.text-green-300 { color: #38a800 !important; }
+
+.border-green-500    { border-color: #58CC02 !important; }
+.border-green-500\/50 { border-color: rgba(88,204,2,0.5) !important; }
+.border-green-500\/30 { border-color: rgba(88,204,2,0.3) !important; }
+.border-green-300    { border-color: #7ee800 !important; }
+
+.bg-green-500\/20   { background-color: rgba(88,204,2,0.08) !important; }
+.bg-green-900\/20   { background-color: rgba(88,204,2,0.07) !important; }
+.shadow-green-500\/50 { box-shadow: 0 8px 20px rgba(88,204,2,0.45) !important; }
+.shadow-green-500\/10 { box-shadow: 0 4px 12px rgba(88,204,2,0.1) !important; }
+
+/* 7. RED → Duolingo Red #FF4B4B */
+.bg-red-500  { background-color: #FF4B4B !important; }
+.bg-red-600  { background-color: #ea3333 !important; }
+.hover\:bg-red-500:hover { background-color: #ea3333 !important; }
+.hover\:bg-red-600:hover { background-color: #cc2222 !important; }
+.text-red-400 { color: #c0392b !important; }
+.text-red-300 { color: #e53e3e !important; }
+.text-red-200 { color: #e53e3e !important; }
+.border-red-500    { border-color: #FF4B4B !important; }
+.border-red-500\/50 { border-color: rgba(255,75,75,0.5) !important; }
+.bg-red-500\/20 { background-color: rgba(255,75,75,0.09) !important; }
+.bg-red-500\/10 { background-color: rgba(255,75,75,0.06) !important; }
+.bg-red-900\/20 { background-color: rgba(255,75,75,0.07) !important; }
+.bg-red-900\/10 { background-color: rgba(255,75,75,0.05) !important; }
+.bg-red-900     { background-color: #fff5f5 !important; }
+.text-red-400.bg-red-900 { color: #c0392b !important; }
+.bg-green-900   { background-color: #f0fff4 !important; }
+.shadow-red-500\/30 { box-shadow: 0 20px 25px rgba(255,75,75,0.28) !important; }
+
+/* 8. GRADIENTS */
+.from-indigo-500 { --tw-gradient-from: #58CC02 !important; }
+.to-purple-500   { --tw-gradient-to: #1CB0F6 !important; }
+.from-indigo-600 { --tw-gradient-from: #58CC02 !important; }
+.to-purple-600   { --tw-gradient-to: #1CB0F6 !important; }
+.from-slate-900.to-indigo-950 {
+  background: linear-gradient(135deg, #f0f8e8, #e6f3ff) !important;
+}
+.bg-gradient-to-r.from-indigo-500.to-purple-500 {
+  background: linear-gradient(to right, #58CC02, #1CB0F6) !important;
+}
+
+/* 9. DUOLINGO 3D BUTTON EFFECT */
+button {
+  transition: transform 0.1s ease, box-shadow 0.1s ease !important;
+  cursor: pointer !important;
+}
+
+/* Primary green buttons */
+button.bg-indigo-600, button[class*="bg-indigo-6"] {
+  box-shadow: 0 4px 0 #3a8c00, 0 1px 12px rgba(88,204,2,0.22) !important;
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.015em !important;
+}
+button.bg-indigo-600:hover { filter: brightness(1.06) !important; }
+button.bg-indigo-600:active, button[class*="bg-indigo-6"]:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #3a8c00 !important;
+}
+
+button.bg-green-600, button[class*="bg-green-6"] {
+  box-shadow: 0 4px 0 #3a8c00 !important;
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+}
+button.bg-green-600:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #3a8c00 !important;
+}
+
+/* Red buttons */
+button.bg-red-500, button.bg-red-600 {
+  box-shadow: 0 4px 0 #cc2222 !important;
+  border-radius: 16px !important;
+}
+button.bg-red-500:active, button.bg-red-600:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #cc2222 !important;
+}
+
+/* Secondary slate buttons → Duolingo outline style */
+button.bg-slate-700, button.bg-slate-800 {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border: 2px solid #e2e8f0 !important;
+  box-shadow: 0 4px 0 #c8d6e0 !important;
+  border-radius: 16px !important;
+}
+button.bg-slate-700:hover, button.bg-slate-800:hover {
+  background-color: #f8fafc !important;
+  border-color: #58CC02 !important;
+}
+button.bg-slate-700:active, button.bg-slate-800:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #c8d6e0 !important;
+}
+
+/* 10. BORDER RADIUS — More Duolingo rounded */
+.rounded-xl  { border-radius: 20px !important; }
+.rounded-2xl { border-radius: 24px !important; }
+.rounded-3xl { border-radius: 28px !important; }
+.rounded-lg  { border-radius: 14px !important; }
+.rounded-md  { border-radius: 10px !important; }
+
+/* 11. CARD STYLING — Duolingo bordered cards */
+.bg-slate-800.rounded-xl,  .bg-slate-800.rounded-2xl,  .bg-slate-800.rounded-3xl,
+.bg-slate-900.rounded-xl,  .bg-slate-900.rounded-2xl,  .bg-slate-900.rounded-3xl {
+  border: 2px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 4px 0 rgba(0,0,0,0.03) !important;
+}
+.bg-slate-800.rounded-xl:hover,
+.bg-slate-900.rounded-xl:hover {
+  border-color: #b8e084 !important;
+  box-shadow: 0 4px 16px rgba(88,204,2,0.12), 0 4px 0 rgba(0,0,0,0.03) !important;
+}
+
+/* 12. NAVBAR */
+.sticky.top-0 {
+  background-color: rgba(255,255,255,0.97) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+}
+
+/* Active nav item */
+.bg-indigo-900\/20.text-indigo-300.border-indigo-500\/20 {
+  background-color: rgba(88,204,2,0.1) !important;
+  color: #2d8c00 !important;
+  border-color: rgba(88,204,2,0.25) !important;
+}
+
+/* 13. SHADOWS */
+.shadow-xl  { box-shadow: 0 4px 16px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04) !important; }
+.shadow-2xl { box-shadow: 0 8px 32px rgba(0,0,0,0.09), 0 2px 8px rgba(0,0,0,0.05) !important; }
+
+/* 14. TYPOGRAPHY WEIGHT — Duolingo bold headers */
+.text-4xl { font-weight: 900 !important; }
+.text-3xl { font-weight: 900 !important; }
+.text-2xl { font-weight: 800 !important; }
+.text-xl  { font-weight: 700 !important; }
+.text-lg  { font-weight: 700 !important; }
+
+/* 15. INPUTS */
+input, textarea, select {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+input:focus, textarea:focus {
+  outline: none !important;
+  border-color: #58CC02 !important;
+  box-shadow: 0 0 0 3px rgba(88,204,2,0.15) !important;
+}
+input::placeholder, textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* 16. SELECTION */
+::selection {
+  background-color: rgba(88,204,2,0.18) !important;
+  color: #1e293b !important;
+}
+
+/* 17. SCROLLBAR */
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f0f4f8 !important; }
+::-webkit-scrollbar-thumb { background: #c8d6e0 !important; border-radius: 6px !important; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8 !important; }
+
+/* 18. CODE / TERMINAL BLOCKS — keep dark */
+/* The code editor panel has bg-slate-950 + overflow-hidden */
+.bg-slate-950.overflow-hidden {
+  background-color: #1a2332 !important;
+}
+.bg-slate-950.overflow-hidden .bg-slate-900 {
+  background-color: #1e2940 !important;
+}
+.bg-slate-950.overflow-hidden .text-slate-400 {
+  color: #7d94b0 !important;
+}
+/* Code output terminals (font-mono text areas) */
+.bg-slate-900\/80.font-mono,
+div[class*="font-mono"][class*="bg-slate-9"] {
+  background-color: #1a2332 !important;
+  color: #7ee787 !important;
+}
+/* Fix hardcoded dark-bg panels */
+.bg-\[\#1e2329\], .bg-\[\#2b3139\], .bg-\[\#121212\], .bg-\[\#151925\] {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* 19. MISC FIXES */
+/* Disabled button contrast */
+.bg-slate-600.text-slate-400 {
+  background-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+}
+/* Answer option border-2 quiz buttons */
+[class*="border-2"][class*="rounded"] {
+  border-radius: 16px !important;
+}
+/* Floating animation panels (feature showcase) */
+.backdrop-blur.border.border-indigo-500\/30 {
+  background-color: rgba(255,255,255,0.95) !important;
+  border-color: rgba(88,204,2,0.35) !important;
+}
+.backdrop-blur.border.border-yellow-500\/30 {
+  background-color: rgba(255,255,255,0.95) !important;
+}
+.backdrop-blur.border.border-green-500\/30 {
+  background-color: rgba(255,255,255,0.95) !important;
+  border-color: rgba(88,204,2,0.4) !important;
+}
+/* Modal/overlay backgrounds */
+.bg-slate-900.rounded-2xl,
+.bg-slate-900.rounded-3xl {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 4px 0 rgba(0,0,0,0.06) !important;
+}
+/* Celebration/XP modal */
+.bg-slate-800.rounded-2xl[class*="border-yellow"] {
+  border-color: #FFD900 !important;
+  box-shadow: 0 0 40px rgba(255,217,0,0.2) !important;
+}
+/* Streak indicator */
+.bg-slate-900.border.border-slate-700.rounded-full {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+/* bg-transparent inputs */
+.bg-transparent { background-color: transparent !important; }
+.bg-transparent.text-white { color: #1e293b !important; }
+/* Yellow gradient text */
+.bg-clip-text.text-transparent { color: transparent !important; }
+
+/* 20. SPECIFIC CARD FIXES — re-theme dark sections that survived the general overrides */
+
+/* Hero pill: "全网首个交互式区块链科普平台" */
+.bg-indigo-900\/30.border-indigo-500\/30 {
+  background-color: rgba(88,204,2,0.1) !important;
+  border-color: rgba(88,204,2,0.3) !important;
+}
+.bg-indigo-900\/30 .text-indigo-300,
+.bg-indigo-900\/30.text-indigo-300 { color: #2d8c00 !important; }
+.bg-indigo-900\/30 .fill-indigo-300,
+.fill-indigo-300 { fill: #2d8c00 !important; }
+
+/* Quiz CTA card: "知识验证 觉得已经懂了？..." */
+.bg-gradient-to-r.from-slate-900.to-indigo-900\/30 {
+  background-image: none !important;
+  background-color: #f4f7fb !important;
+  border-color: #e2e8f0 !important;
+}
+.bg-gradient-to-r.from-slate-900.to-indigo-900\/30 .text-white { color: #1e293b !important; }
+.bg-gradient-to-r.from-slate-900.to-indigo-900\/30 .text-indigo-400 { color: #58CC02 !important; }
+
+/* Optimistic / ZK Rollup principle card: "乐观派原理 (Optimistic Rollup)..." */
+.bg-slate-950\/50 {
+  background-color: #f4f7fb !important;
+  border-color: #e2e8f0 !important;
+}
+.bg-slate-950\/50 .text-blue-400 { color: #1d4ed8 !important; }
+.bg-slate-950\/50 .text-purple-400 { color: #7c3aed !important; }
+.bg-slate-950\/50 .text-slate-400 { color: #475569 !important; }
+.bg-slate-950\/50 .text-slate-500 { color: #64748b !important; }
+.bg-slate-950\/50 strong { color: #0f172a !important; }
+
+/* Course path nodes: force white icon + label overrides for Duolingo-style level circles */
+.course-path-node svg { stroke: #ffffff !important; color: #ffffff !important; }
+.course-path-node .node-badge-num { color: #334155 !important; }
+.course-path-node .node-badge-num svg { stroke: #334155 !important; }
+
+/* 21. PAGE BACKGROUND — subtle blockchain-themed dot grid + soft gradient blobs */
+body {
+  background-color: #f8fafc;
+  background-image:
+    radial-gradient(rgba(100,116,139,0.10) 1px, transparent 1px),
+    radial-gradient(circle at 85% -10%, rgba(88,204,2,0.08), transparent 50%),
+    radial-gradient(circle at -10% 110%, rgba(255,217,0,0.08), transparent 50%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
+}
+    </style>
+
+  <script type="module" crossorigin src="assets/index-CRT7ctQ0.js"></script>
+</head>
+  <body>
+    <div id="root"></div>
+
+    <!-- ============================================================
+         Overlay pages: 适合谁学 / 常见问题
+         Triggered from navbar via window.showWhoFor() / window.showFAQ()
+         ============================================================ -->
+    <div id="overlay-root" style="position:fixed;inset:0;z-index:9999;display:none;">
+      <div id="overlay-backdrop" style="position:absolute;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);"></div>
+
+      <div id="overlay-panel" style="position:relative;max-width:860px;margin:4vh auto;max-height:92vh;overflow-y:auto;background:#ffffff;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.25);padding:40px 44px 56px;">
+        <button id="overlay-close" aria-label="关闭"
+          style="position:sticky;float:right;top:0;width:40px;height:40px;border-radius:50%;border:2px solid #e2e8f0;background:#ffffff;font-size:18px;font-weight:900;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 #e2e8f0;">
+          ×
+        </button>
+
+        <!-- ====== 适合谁学 ====== -->
+        <section id="page-who-for" style="display:none;">
+          <div style="display:inline-block;padding:4px 14px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:900;letter-spacing:0.05em;margin-bottom:14px;">WHO IS THIS FOR</div>
+          <h1 style="font-size:36px;font-weight:900;color:#0f172a;margin:0 0 12px;line-height:1.15;">适合谁学 Sypher Engine？</h1>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;max-width:64ch;">
+            Sypher Engine 是一个<strong>纯技术向</strong>的区块链可视化课堂，不涉及任何投资、交易或理财内容。只要你对"区块链到底怎么跑起来"感到好奇，这里都有为你准备的互动模块。
+          </p>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+            <div style="border:2px solid #bbf7d0;border-radius:20px;padding:22px;background:#f0fdf4;box-shadow:0 4px 0 #bbf7d0;">
+              <div style="font-size:32px;margin-bottom:8px;">🎓</div>
+              <h3 style="margin:0 0 6px;font-size:18px;font-weight:900;color:#0f172a;">计算机相关在校生</h3>
+              <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">课程体系覆盖哈希、共识、Merkle 树、智能合约、Rollup 等课堂高频考点，帮你把 PPT 上的名词跑成可交互的 demo。</p>
+            </div>
+            <div style="border:2px solid #bfdbfe;border-radius:20px;padding:22px;background:#eff6ff;box-shadow:0 4px 0 #bfdbfe;">
+              <div style="font-size:32px;margin-bottom:8px;">💻</div>
+              <h3 style="margin:0 0 6px;font-size:18px;font-weight:900;color:#0f172a;">Web2 转型的开发者</h3>
+              <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">不想被"EVM、Gas、签名"这些术语劝退？通过手动打包区块、触发重放攻击，真正理解底层数据结构差别。</p>
+            </div>
+            <div style="border:2px solid #fde68a;border-radius:20px;padding:22px;background:#fefce8;box-shadow:0 4px 0 #fde68a;">
+              <div style="font-size:32px;margin-bottom:8px;">🧑‍🏫</div>
+              <h3 style="margin:0 0 6px;font-size:18px;font-weight:900;color:#0f172a;">区块链课程的老师</h3>
+              <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">上课讲抽象概念学生没感觉？直接把模拟器投屏，让学生在 5 分钟内看到"雪崩效应""51% 攻击"真实发生。</p>
+            </div>
+            <div style="border:2px solid #e9d5ff;border-radius:20px;padding:22px;background:#faf5ff;box-shadow:0 4px 0 #e9d5ff;">
+              <div style="font-size:32px;margin-bottom:8px;">🔎</div>
+              <h3 style="margin:0 0 6px;font-size:18px;font-weight:900;color:#0f172a;">技术科普爱好者</h3>
+              <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">看过很多"区块链是什么"的文章但始终没看懂？这里你亲手操作一次，概念就变成了肌肉记忆。</p>
+            </div>
+            <div style="border:2px solid #fecaca;border-radius:20px;padding:22px;background:#fef2f2;box-shadow:0 4px 0 #fecaca;">
+              <div style="font-size:32px;margin-bottom:8px;">🛡️</div>
+              <h3 style="margin:0 0 6px;font-size:18px;font-weight:900;color:#0f172a;">关心安全的产品/合规</h3>
+              <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">理解密钥托管、交易签名、合约不可篡改的原理，能帮助你在风险评审、合规讨论中问出对的问题。</p>
+            </div>
+            <div style="border:2px solid #c7d2fe;border-radius:20px;padding:22px;background:#eef2ff;box-shadow:0 4px 0 #c7d2fe;">
+              <div style="font-size:32px;margin-bottom:8px;">📚</div>
+              <h3 style="margin:0 0 6px;font-size:18px;font-weight:900;color:#0f172a;">想系统自学的新手</h3>
+              <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">零金融前置要求。按照首页的"学习路径"顺序刷一遍，就能把一整张区块链知识图谱串起来。</p>
+            </div>
+          </div>
+
+          <div style="margin-top:36px;padding:20px 24px;background:#f8fafc;border:2px dashed #cbd5e1;border-radius:20px;color:#475569;font-size:14px;line-height:1.7;">
+            <strong style="color:#0f172a;">不适合谁？</strong> 想学炒币、寻找投资建议、或希望把课程内容用于具体交易决策的用户。本站不提供任何金融相关内容。
+          </div>
+        </section>
+
+        <!-- ====== 常见问题 ====== -->
+        <section id="page-faq" style="display:none;">
+          <div style="display:inline-block;padding:4px 14px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:900;letter-spacing:0.05em;margin-bottom:14px;">FAQ</div>
+          <h1 style="font-size:36px;font-weight:900;color:#0f172a;margin:0 0 12px;line-height:1.15;">常见问题</h1>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 28px;max-width:64ch;">
+            开始学习之前，你也许想先了解这些。
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:14px;">
+
+            <details style="border:2px solid #e2e8f0;border-radius:18px;padding:16px 20px;background:#ffffff;box-shadow:0 2px 0 #e2e8f0;">
+              <summary style="cursor:pointer;font-weight:900;color:#0f172a;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>Sypher Engine 免费吗？会涉及投资理财吗？</span>
+                <span style="color:#58CC02;font-size:20px;">＋</span>
+              </summary>
+              <p style="margin:12px 0 0;color:#475569;line-height:1.7;font-size:15px;">完全免费，也不涉及任何形式的投资、交易、入金或资金托管。本站只是纯技术原理教学，所有"模拟"都在你的浏览器里本地跑，没有任何真实资产参与。</p>
+            </details>
+
+            <details style="border:2px solid #e2e8f0;border-radius:18px;padding:16px 20px;background:#ffffff;box-shadow:0 2px 0 #e2e8f0;">
+              <summary style="cursor:pointer;font-weight:900;color:#0f172a;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>没有编程基础也能学吗？</span>
+                <span style="color:#58CC02;font-size:20px;">＋</span>
+              </summary>
+              <p style="margin:12px 0 0;color:#475569;line-height:1.7;font-size:15px;">可以。课程以"拖拽 / 点按 / 滑动"等可视化互动为主，关键代码都配有中文注释。你不需要写一行代码，也能看懂区块链的核心机制。</p>
+            </details>
+
+            <details style="border:2px solid #e2e8f0;border-radius:18px;padding:16px 20px;background:#ffffff;box-shadow:0 2px 0 #e2e8f0;">
+              <summary style="cursor:pointer;font-weight:900;color:#0f172a;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>推荐的学习顺序是什么？</span>
+                <span style="color:#58CC02;font-size:20px;">＋</span>
+              </summary>
+              <p style="margin:12px 0 0;color:#475569;line-height:1.7;font-size:15px;">建议按首页"学习路径"板块的顺序：<strong>Web3 起源 → 原理基础 → 安全机制 → 智能合约 → Web3 钱包 → 公链争霸 → L2 扩容</strong>。 每一章都会在你的进度里留下一枚结业证书。</p>
+            </details>
+
+            <details style="border:2px solid #e2e8f0;border-radius:18px;padding:16px 20px;background:#ffffff;box-shadow:0 2px 0 #e2e8f0;">
+              <summary style="cursor:pointer;font-weight:900;color:#0f172a;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>学完这套课程，能达到什么水平？</span>
+                <span style="color:#58CC02;font-size:20px;">＋</span>
+              </summary>
+              <p style="margin:12px 0 0;color:#475569;line-height:1.7;font-size:15px;">你会真正理解区块链的"为什么"—— 哈希为什么防篡改、共识为什么难以作恶、钱包私钥为什么必须离线、L2 为什么能又快又安全。这是看懂任何一个具体公链项目文档的底层语言。</p>
+            </details>
+
+            <details style="border:2px solid #e2e8f0;border-radius:18px;padding:16px 20px;background:#ffffff;box-shadow:0 2px 0 #e2e8f0;">
+              <summary style="cursor:pointer;font-weight:900;color:#0f172a;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>会记录我的个人信息吗？</span>
+                <span style="color:#58CC02;font-size:20px;">＋</span>
+              </summary>
+              <p style="margin:12px 0 0;color:#475569;line-height:1.7;font-size:15px;">不会。证书进度只存在你浏览器的本地存储里。清缓存即重置。本站没有账号体系，也不收集任何身份信息。</p>
+            </details>
+
+            <details style="border:2px solid #e2e8f0;border-radius:18px;padding:16px 20px;background:#ffffff;box-shadow:0 2px 0 #e2e8f0;">
+              <summary style="cursor:pointer;font-weight:900;color:#0f172a;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>发现内容错误或想建议新模块，怎么反馈？</span>
+                <span style="color:#58CC02;font-size:20px;">＋</span>
+              </summary>
+              <p style="margin:12px 0 0;color:#475569;line-height:1.7;font-size:15px;">欢迎随时通过页面底部的 Sypher DAO 联系方式反馈。我们会根据反馈持续更新模块。</p>
+            </details>
+
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        var root = document.getElementById('overlay-root');
+        var panel = document.getElementById('overlay-panel');
+        var backdrop = document.getElementById('overlay-backdrop');
+        var btnClose = document.getElementById('overlay-close');
+        var pages = {
+          whoFor: document.getElementById('page-who-for'),
+          faq: document.getElementById('page-faq')
+        };
+        function show(key){
+          Object.keys(pages).forEach(function(k){ pages[k].style.display = (k===key?'block':'none'); });
+          root.style.display = 'block';
+          panel.scrollTop = 0;
+          document.body.style.overflow = 'hidden';
+        }
+        function hide(){
+          root.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+        window.showWhoFor = function(){ show('whoFor'); };
+        window.showFAQ    = function(){ show('faq'); };
+        window.closeOverlay = hide;
+        btnClose.addEventListener('click', hide);
+        backdrop.addEventListener('click', hide);
+        document.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
+      })();
+    </script>
+    <script>
+      // Core modes interface — reserved for future 区块链模拟器 / 黑客攻击演练 / 共识机制实验.
+      // Buttons on the homepage call window.openCoreMode(mode) with mode in {"simulator","attack","consensus"}.
+      // Replace the body below with real routing when each mode is implemented.
+      (function(){
+        var LABELS = { simulator:'区块链模拟器', attack:'黑客攻击演练', consensus:'共识机制实验' };
+        window.coreModeHandlers = window.coreModeHandlers || {};
+        window.openCoreMode = function(mode){
+          var handler = window.coreModeHandlers[mode];
+          if (typeof handler === 'function') { handler(); return; }
+          var label = LABELS[mode] || mode;
+          showToast(label + ' · 敬请期待');
+        };
+        function showToast(msg){
+          var el = document.getElementById('core-mode-toast');
+          if (!el) {
+            el = document.createElement('div');
+            el.id = 'core-mode-toast';
+            el.style.cssText = 'position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:12px 24px;border-radius:16px;font-weight:700;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:opacity 0.2s, transform 0.2s;pointer-events:none;';
+            document.body.appendChild(el);
+          }
+          el.textContent = msg;
+          requestAnimationFrame(function(){
+            el.style.opacity = '1';
+            el.style.transform = 'translateX(-50%) translateY(0)';
+          });
+          clearTimeout(el._hideTimer);
+          el._hideTimer = setTimeout(function(){
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(-50%) translateY(20px)';
+          }, 1800);
+        }
+      })();
+    </script>
+  </body>
+</html>
